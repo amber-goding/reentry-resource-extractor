@@ -80,3 +80,128 @@ Remove all demo files, images, logos, counter functionality, starter markup, and
 Keep the files required for the Vite project to run, including `package.json`, `package-lock.json`, `.gitignore`, `index.html`, and the main JavaScript/CSS entry files if they are still needed. If `main.js` or the CSS file contains starter demo code, clear that code instead of deleting the file.
 Leave the page nearly blank, with only the text `Reentry Resource Extractor` so we can confirm the app still loads.
 Do not install anything, add new features, or begin building the application yet. After cleanup, verify there are no broken imports or references to deleted files and confirm that `npm run dev` still works.
+
+### Prompt 3 — Fix CSS Module Reference
+
+**Context:** The cleaned Vite project is showing a browser console MIME type error.
+
+**Task:** Inspect `index.html`, `src/main.js`, and `src/style.css` and fix the incorrect reference causing CSS to load as a JavaScript module.
+
+**Format:** Keep the project minimal and verify with the dev server and browser console.
+
+**Constraints:** Do not add features or begin building the application yet; confirm no console errors.
+
+**Full Prompt:**\
+# Context from my IDE setup:
+
+## Active file: index.html
+
+## Active selection of the file:
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reentry Resource Extractor</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+
+## Open tabs:
+- index.html: index.html
+- prompt-history.md: prompt-history.md
+- style.css: src/style.css
+- main.js: src/main.js
+- counter.js: src/counter.js
+
+## My request:
+The cleaned Vite project currently produces this browser console error:
+`Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "text/css".`
+Inspect `index.html`, `src/main.js`, and `src/style.css` and fix the incorrect file reference causing CSS to be loaded as a JavaScript module.
+Keep the project minimal. Do not add new features or begin building the Reentry Resource Extractor yet.
+After fixing it, verify that `npm run dev` works, the page loads successfully, and there are no browser console errors.
+
+### Prompt 4 — Create Project Plan
+
+**Context:** The project needs a concise source-of-truth plan before new application code is written.
+
+**Task:** Create `project-plan.md` defining the Reentry Resource Extractor scope, workflow, AI role, risks, review, and MVP exclusions.
+
+**Format:** A short, practical, beginner-friendly Markdown plan.
+
+**Constraints:** Do not add undescribed features or build the interface, scraper, backend, database, authentication, or AI integration yet.
+
+**Full Prompt:**\
+# Context from my IDE setup:
+
+## Active file: prompt-history.md
+
+## Open tabs:
+- prompt-history.md: prompt-history.md
+- project-plan.md: project-plan.md
+- index.html: index.html
+- main.js: src/main.js
+- style.css: src/style.css
+
+## My request:
+Create a concise `project-plan.md` file for the Reentry Resource Extractor before writing any new application code.
+
+The Reentry Resource Extractor is a web application designed to help transitional housing, halfway house, and reentry program managers create structured program listings from information already available on their public websites.
+
+The first version should follow this workflow:
+
+1. A program manager enters the URL of their public website.
+2. The application retrieves accessible website content.
+3. AI analyzes that content and extracts specific reentry-program information.
+4. Any information that cannot be found must be marked as `Not Found` rather than guessed or inferred.
+5. The manager reviews and edits the extracted information before it is considered complete.
+
+In `project-plan.md`, define:
+
+- the problem this application solves
+- the primary user
+- the MVP user flow
+- the information the application should eventually extract
+- the role of AI in the workflow
+- what the AI is not allowed to do
+- the primary failure mode
+- how human review reduces that risk
+- the features that are intentionally out of scope for this first version
+
+Keep the plan short, practical, and beginner-friendly. Do not add features that I have not described.
+
+Treat `project-plan.md` as the source of truth for future implementation decisions unless I explicitly revise the project scope later.
+
+Do not build the interface, scraper, backend, database, authentication, or AI integration yet. This step is only to establish the project scope and development direction.
+
+### Prompt 5 — Define Extraction Fields
+
+**Context:** The project needs a simple field structure for the information the extractor will eventually collect from program websites.
+
+**Task:** Create a beginner-friendly JavaScript module defining extraction fields with value, found status, and source evidence slots.
+
+**Format:** A simple data structure with brief explanatory comments, easy to display later and populate with AI results.
+
+**Constraints:** Do not add scraping, AI, backend functionality, mock results, or interface elements; avoid changing `project-plan.md` unless necessary.
+
+**Full Prompt:**\
+# Context from my IDE setup:
+
+## Active file: prompt-history.md
+
+## Open tabs:
+- prompt-history.md: prompt-history.md
+- project-plan.md: project-plan.md
+- index.html: index.html
+- main.js: src/main.js
+- style.css: src/style.css
+
+## My request:
+Define the structured information that the Reentry Resource Extractor will eventually extract from a program website.
+Create a beginner-friendly JavaScript module for these fields: program name, website, address, phone, email, population served, gender eligibility, age requirements, housing type, cost, length of stay, employment requirement, substance-use policy, MAT policy, probation/parole eligibility, transportation, employment assistance, counseling, education support, application process, and waitlist or availability.
+Each field should be able to eventually store three pieces of information: the extracted value, whether the information was found, and the source evidence from the website that supports the value.
+Use a simple structure that will be easy to display in the interface and later populate with AI-generated results. Do not add scraping, AI, backend functionality, mock results, or interface elements yet.
+Add brief comments explaining the structure, verify that the existing application still runs, and do not modify `project-plan.md` unless a change is necessary to remain consistent with the established project scope.
