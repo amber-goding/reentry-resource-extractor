@@ -626,3 +626,66 @@ Do not significantly redesign the UI yet.
 
 ## My request:
 is it set now?
+
+### Prompt 14 — Add Human Review
+
+**Context:** AI extraction results need a human-in-the-loop review step before they are considered complete.
+
+**Task:** Make extracted fields editable, preserve AI evidence, and add per-field review statuses.
+
+**Format:** Beginner-friendly frontend update with editable reviewed values, AI-vs-human distinction, and simple `Unreviewed`, `Confirmed`, and `Edited` states.
+
+**Constraints:** Keep retrieval and AI extraction unchanged; do not add databases, accounts, authentication, publishing, crawling, export, major redesigns, or unrelated features.
+
+**Full Prompt:**\
+# Context from my IDE setup:
+
+## Active file: project-plan.md
+
+## Open tabs:
+- project-plan.md: project-plan.md
+- package.json: package.json
+- server.js: server.js
+- prompt-history.md: prompt-history.md
+- README.md: README.md
+
+## My request:
+Add a human-review step to the Reentry Resource Extractor so a program manager can verify and correct AI-generated results before considering them complete.
+
+Keep the current retrieval and AI extraction flow unchanged. After AI extraction finishes, make each extraction field editable by the user.
+
+For every field, preserve the current AI result and source evidence, but allow the manager to:
+
+- edit a found value if it is inaccurate or incomplete
+- manually enter a value for a field marked `Not Found`
+- clear a value if the AI extracted something incorrect
+- distinguish between the original AI-extracted value and the manager-reviewed value
+
+Do not overwrite or remove the AI source evidence when the user edits a field. The interface should make it clear which value came from AI and which value was changed or added by the human reviewer.
+
+Add a simple review status for each field, such as:
+
+- `Unreviewed`
+- `Confirmed`
+- `Edited`
+
+The manager should be able to mark a field as confirmed when the AI result is correct, or edit it and have the field automatically marked as edited.
+
+Add a clear overall message explaining that AI-generated information should be reviewed before use.
+
+Keep this version local only. Do not add saving to a database, user accounts, authentication, publishing, multi-page crawling, or export functionality yet.
+
+Preserve accessibility and responsive behavior. Keep the implementation beginner-friendly and avoid unnecessary abstractions.
+
+After implementation, verify that:
+
+- AI results still render correctly
+- `Not Found` fields can be manually filled in
+- found fields can be corrected
+- source evidence remains visible after edits
+- users can distinguish AI output from human-reviewed values
+- confirmation/edit states work as expected
+- no changes break retrieval or AI extraction
+- the app runs without unexpected frontend or backend errors
+
+Do not significantly redesign the application yet. This step is focused on completing the responsible human-in-the-loop workflow.

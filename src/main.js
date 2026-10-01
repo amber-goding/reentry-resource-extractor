@@ -1,6 +1,12 @@
-import { extractionFields } from './extractionFields.js'
+﻿import { extractionFields } from './extractionFields.js'
 
 const app = document.querySelector('#app')
+
+const REVIEW_STATUS = {
+  unreviewed: 'Unreviewed',
+  confirmed: 'Confirmed',
+  edited: 'Edited',
+}
 
 // Development-only demo data. This is not retrieved from a real website.
 // It exists only to test how the results area handles found and missing fields.
@@ -44,26 +50,136 @@ const developmentSampleResults = {
   },
 }
 
-const getFieldDisplayValue = (field, hasBeenAnalyzed) => {
+const getAiValue = (field) => field.aiValue ?? field.value ?? ''
+
+const getAiDisplayValue = (field, hasBeenAnalyzed) => {
   if (!hasBeenAnalyzed) {
     return 'Not analyzed yet'
   }
 
-  return field.found ? field.value : 'Not Found'
+  return field.found ? getAiValue(field) : 'Not Found'
 }
 
-const createResultRow = (field, hasBeenAnalyzed) => {
+const getReviewedValue = (field) => field.reviewedValue ?? (field.found ? getAiValue(field) : '')
+
+const createReviewableResults = (results) => {
+  const reviewableResults = {}
+
+  Object.entries(results).forEach(([fieldKey, field]) => {
+    const aiValue = field.value || ''
+
+    reviewableResults[fieldKey] = {
+      ...field,
+      aiValue,
+      reviewedValue: field.found ? aiValue : '',
+      reviewStatus: REVIEW_STATUS.unreviewed,
+    }
+  })
+
+  return reviewableResults
+}
+
+const createReviewStatusBadge = (field) => {
+  const badge = document.createElement('span')
+  badge.className = 'review-status'
+  badge.textContent = field.reviewStatus || REVIEW_STATUS.unreviewed
+
+  return badge
+}
+
+const updateReviewStatus = (field, badge, status) => {
+  field.reviewStatus = status
+  badge.textContent = status
+}
+
+const createReviewControls = (fieldKey, field, statusBadge) => {
+  const reviewPanel = document.createElement('div')
+  reviewPanel.className = 'review-panel'
+
+  const label = document.createElement('label')
+  label.setAttribute('for', `review-${fieldKey}`)
+  label.textContent = 'Manager-reviewed value'
+
+  const textarea = document.createElement('textarea')
+  textarea.id = `review-${fieldKey}`
+  textarea.name = `review-${fieldKey}`
+  textarea.rows = 3
+  textarea.value = getReviewedValue(field)
+  textarea.placeholder = field.found
+    ? 'Edit or clear the AI value after review.'
+    : 'Enter a value if the program website supports it or leave blank.'
+
+  textarea.addEventListener('input', () => {
+    field.reviewedValue = textarea.value
+    updateReviewStatus(field, statusBadge, REVIEW_STATUS.edited)
+  })
+
+  const actions = document.createElement('div')
+  actions.className = 'review-actions'
+
+  const confirmButton = document.createElement('button')
+  confirmButton.type = 'button'
+  confirmButton.className = 'secondary-button review-button'
+  confirmButton.textContent = 'Mark confirmed'
+  confirmButton.addEventListener('click', () => {
+    const confirmedValue = field.found ? getAiValue(field) : ''
+    field.reviewedValue = confirmedValue
+    textarea.value = confirmedValue
+    updateReviewStatus(field, statusBadge, REVIEW_STATUS.confirmed)
+  })
+
+  const clearButton = document.createElement('button')
+  clearButton.type = 'button'
+  clearButton.className = 'secondary-button review-button'
+  clearButton.textContent = 'Clear reviewed value'
+  clearButton.addEventListener('click', () => {
+    field.reviewedValue = ''
+    textarea.value = ''
+    updateReviewStatus(field, statusBadge, REVIEW_STATUS.edited)
+  })
+
+  const note = document.createElement('p')
+  note.className = 'review-note'
+  note.textContent =
+    'The AI result and source evidence remain unchanged. Use this field for the human-reviewed value.'
+
+  actions.append(confirmButton, clearButton)
+  reviewPanel.append(label, textarea, actions, note)
+
+  return reviewPanel
+}
+
+const createResultRow = (fieldKey, field, hasBeenAnalyzed, isReviewable) => {
   const row = document.createElement('li')
   row.className = 'result-row'
 
   const fieldSummary = document.createElement('div')
+  fieldSummary.className = 'field-summary'
+
+  const labelGroup = document.createElement('div')
+  labelGroup.className = 'result-label-group'
 
   const label = document.createElement('h3')
   label.textContent = field.label
+  labelGroup.append(label)
+
+  let statusBadge
+
+  if (isReviewable) {
+    statusBadge = createReviewStatusBadge(field)
+    labelGroup.append(statusBadge)
+  }
 
   const value = document.createElement('p')
   value.className = 'result-value'
-  value.textContent = getFieldDisplayValue(field, hasBeenAnalyzed)
+
+  if (isReviewable) {
+    const valueLabel = document.createElement('strong')
+    valueLabel.textContent = 'AI result: '
+    value.append(valueLabel, getAiDisplayValue(field, hasBeenAnalyzed))
+  } else {
+    value.textContent = getAiDisplayValue(field, hasBeenAnalyzed)
+  }
 
   const evidence = document.createElement('p')
   evidence.className = 'result-evidence'
@@ -78,17 +194,23 @@ const createResultRow = (field, hasBeenAnalyzed) => {
       : 'Source evidence will appear here after analysis.'
   }
 
-  fieldSummary.append(label, value)
+  fieldSummary.append(labelGroup, value)
   row.append(fieldSummary, evidence)
+
+  if (isReviewable) {
+    row.append(createReviewControls(fieldKey, field, statusBadge))
+  }
 
   return row
 }
 
-const renderResults = (results, hasBeenAnalyzed = false) => {
+const renderResults = (results, options = {}) => {
+  const { hasBeenAnalyzed = false, isReviewable = false } = options
+
   resultsList.replaceChildren()
 
-  Object.values(results).forEach((field) => {
-    resultsList.append(createResultRow(field, hasBeenAnalyzed))
+  Object.entries(results).forEach(([fieldKey, field]) => {
+    resultsList.append(createResultRow(fieldKey, field, hasBeenAnalyzed, isReviewable))
   })
 }
 
@@ -161,7 +283,7 @@ app.innerHTML = `
             <p class="eyebrow">Review fields</p>
             <h2 id="results-title">Extraction results</h2>
           </div>
-          <p class="empty-state">
+          <p id="results-guidance" class="empty-state">
             Results will appear here after a website is analyzed. Until then, each field is shown
             as a placeholder from the extraction schema.
           </p>
@@ -176,6 +298,7 @@ const form = document.querySelector('#website-form')
 const statusMessage = document.querySelector('#form-status')
 const demoResultsButton = document.querySelector('#demo-results-button')
 const resultsList = document.querySelector('#results-list')
+const resultsGuidance = document.querySelector('#results-guidance')
 const urlInput = document.querySelector('#program-url')
 const analyzeButton = form.querySelector('button[type="submit"]')
 const retrievalSummary = document.querySelector('#retrieval-summary')
@@ -186,6 +309,16 @@ renderResults(extractionFields)
 const setLoadingState = (isLoading) => {
   analyzeButton.disabled = isLoading
   analyzeButton.textContent = isLoading ? 'Retrieving...' : 'Analyze Program'
+}
+
+const setDefaultResultsGuidance = () => {
+  resultsGuidance.textContent =
+    'Results will appear here after a website is analyzed. Until then, each field is shown as a placeholder from the extraction schema.'
+}
+
+const setReviewResultsGuidance = () => {
+  resultsGuidance.textContent =
+    'AI-generated information is a draft. Review every field before use, confirm accurate fields, and edit or clear anything that is incorrect or unsupported.'
 }
 
 const showRetrievalMessage = (message, type = 'neutral') => {
@@ -248,6 +381,7 @@ form.addEventListener('submit', async (event) => {
   const submittedUrl = urlInput.value.trim()
 
   setLoadingState(true)
+  setDefaultResultsGuidance()
   renderResults(extractionFields)
   retrievalPreview.hidden = true
   retrievalPreview.textContent = ''
@@ -264,11 +398,15 @@ form.addEventListener('submit', async (event) => {
 
     try {
       const analysis = await requestAnalysis(retrievedWebsite)
-      renderResults(mergeExtractionResults(analysis.results), true)
+      const reviewableResults = createReviewableResults(mergeExtractionResults(analysis.results))
+
+      renderResults(reviewableResults, { hasBeenAnalyzed: true, isReviewable: true })
+      setReviewResultsGuidance()
       statusMessage.textContent =
-        'AI extraction completed. Please review each field and its source evidence before using the results.'
+        'AI extraction completed. Review each field, confirm accurate values, and edit or clear anything that needs correction.'
     } catch (error) {
       renderResults(extractionFields)
+      setDefaultResultsGuidance()
       statusMessage.textContent = `Retrieval succeeded, but AI extraction failed: ${error.message}`
     }
   } catch (error) {
@@ -280,7 +418,11 @@ form.addEventListener('submit', async (event) => {
 })
 
 demoResultsButton.addEventListener('click', () => {
-  renderResults(developmentSampleResults, true)
+  renderResults(createReviewableResults(developmentSampleResults), {
+    hasBeenAnalyzed: true,
+    isReviewable: true,
+  })
+  setReviewResultsGuidance()
   statusMessage.textContent =
     'Development sample results are displayed for interface testing only. They are not from a real website.'
 })
