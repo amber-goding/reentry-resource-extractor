@@ -81,7 +81,8 @@ const createReviewableResults = (results) => {
 
 const createReviewStatusBadge = (field) => {
   const badge = document.createElement('span')
-  badge.className = 'review-status'
+  const statusClass = (field.reviewStatus || REVIEW_STATUS.unreviewed).toLowerCase()
+  badge.className = `review-status review-status-${statusClass}`
   badge.textContent = field.reviewStatus || REVIEW_STATUS.unreviewed
 
   return badge
@@ -89,6 +90,7 @@ const createReviewStatusBadge = (field) => {
 
 const updateReviewStatus = (field, badge, status) => {
   field.reviewStatus = status
+  badge.className = `review-status review-status-${status.toLowerCase()}`
   badge.textContent = status
 }
 
@@ -151,7 +153,8 @@ const createReviewControls = (fieldKey, field, statusBadge) => {
 
 const createResultRow = (fieldKey, field, hasBeenAnalyzed, isReviewable) => {
   const row = document.createElement('li')
-  row.className = 'result-row'
+  const fieldStateClass = !hasBeenAnalyzed ? 'is-pending' : field.found ? 'is-found' : 'is-not-found'
+  row.className = `result-row ${fieldStateClass}`
 
   const fieldSummary = document.createElement('div')
   fieldSummary.className = 'field-summary'
@@ -169,6 +172,11 @@ const createResultRow = (fieldKey, field, hasBeenAnalyzed, isReviewable) => {
     statusBadge = createReviewStatusBadge(field)
     labelGroup.append(statusBadge)
   }
+
+  const extractionState = document.createElement('span')
+  extractionState.className = `extraction-state ${fieldStateClass}`
+  extractionState.textContent = !hasBeenAnalyzed ? 'Awaiting analysis' : field.found ? 'Found' : 'Not Found'
+  labelGroup.append(extractionState)
 
   const value = document.createElement('p')
   value.className = 'result-value'
@@ -231,14 +239,24 @@ const mergeExtractionResults = (analysisResults) => {
 
 app.innerHTML = `
   <main class="app-shell">
-    <section class="intro" aria-labelledby="page-title">
-      <p class="eyebrow">Program listing helper</p>
-      <h1 id="page-title">Reentry Resource Extractor</h1>
-      <p class="intro-copy">
-        Enter a public program website to prepare for a structured review of reentry housing
-        and support-service details. Future analysis will mark missing information as
-        <strong>Not Found</strong> instead of guessing.
-      </p>
+    <section class="intro hero-panel" aria-labelledby="page-title">
+      <div class="hero-content">
+        <p class="eyebrow">Program listing helper</p>
+        <h1 id="page-title">Reentry Resource Extractor</h1>
+        <p class="intro-copy">
+          Turn a public reentry-program website into a structured draft listing that managers can
+          verify, correct, and complete with confidence.
+        </p>
+        <p class="hero-note">
+          AI extracts only what the website supports. Missing details stay marked as
+          <strong>Not Found</strong> until a human reviewer confirms or edits the result.
+        </p>
+      </div>
+      <div class="pathway-card" aria-label="Application workflow">
+        <span>Retrieve</span>
+        <span>Extract</span>
+        <span>Review</span>
+      </div>
     </section>
 
     <section class="workflow" aria-labelledby="website-form-title">

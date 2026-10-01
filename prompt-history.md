@@ -689,3 +689,87 @@ After implementation, verify that:
 - the app runs without unexpected frontend or backend errors
 
 Do not significantly redesign the application yet. This step is focused on completing the responsible human-in-the-loop workflow.
+
+### Prompt 15 — Redesign Product Interface
+
+**Context:** The MVP functionality exists and now needs a polished, presentation-ready visual design.
+
+**Task:** Redesign the existing interface while preserving retrieval, AI extraction, `Not Found` handling, source evidence, and human review behavior.
+
+**Format:** Responsive Vanilla HTML/CSS/JavaScript interface with professional visual identity, strong hierarchy, accessible states, and subtle motion.
+
+**Constraints:** Do not add frameworks, product features, backend changes, schema changes, security changes, or alter existing functionality beyond small frontend design support.
+
+**Full Prompt:**\
+# Context from my IDE setup:
+
+## Active file: prompt-history.md
+
+## Open tabs:
+- prompt-history.md: prompt-history.md
+- project-plan.md: project-plan.md
+- package.json: package.json
+- server.js: server.js
+- README.md: README.md
+
+## My request:
+Redesign the existing Reentry Resource Extractor interface into a polished, distinctive, presentation-ready product without changing or breaking any existing functionality.
+
+The application already has working website retrieval, AI extraction, source evidence, `Not Found` handling, and human review. Preserve all of that behavior exactly as it currently works.
+
+I want the visual design to feel professional, innovative, hopeful, and intentionally connected to the idea of reentry, transition, progress, and a new beginning. Avoid the generic “white dashboard with blue cards” appearance common in bootcamp projects.
+
+Create a cohesive visual identity using modern typography, strong hierarchy, layered surfaces, thoughtful spacing, subtle depth, and restrained visual effects. You may use gradients, geometric shapes, soft background treatments, accent lines, status badges, or subtle animations where they genuinely improve the experience, but do not make the interface distracting or gimmicky.
+
+Give the page a strong hero/header area that makes the purpose of the Reentry Resource Extractor immediately understandable.
+
+Improve the visual hierarchy of:
+
+- the URL analysis form
+- retrieval status and website-text preview
+- extraction results
+- `Found`, `Not Found`, and review states
+- source evidence
+- manager review controls
+- `Unreviewed`, `Confirmed`, and `Edited` statuses
+
+Make `Not Found` visually distinct without making it look like an application error. Make confirmed and edited fields easy to recognize.
+
+The interface must be fully responsive and intentionally designed for:
+
+- desktop
+- tablet
+- mobile phones
+
+Do not simply shrink the desktop layout on mobile. Reorganize content so it remains easy to read and interact with on smaller screens.
+
+Maintain strong accessibility:
+
+- readable contrast
+- visible keyboard focus states
+- appropriately sized touch targets
+- semantic structure
+- no information communicated through color alone
+- respect `prefers-reduced-motion` for animations
+
+Use only the existing Vanilla HTML, CSS, and JavaScript setup. Do not add React, Tailwind, Bootstrap, component libraries, icon libraries, or other UI frameworks.
+
+Do not modify the website retrieval logic, AI extraction logic, backend security, extraction schema, API configuration, or human-review behavior unless a very small frontend adjustment is required solely to support the design.
+
+Do not add new product features.
+
+Keep animations subtle and fast. The product should feel credible for organizations serving people during reentry, not like a flashy marketing site.
+
+After redesigning the interface, verify:
+
+1. website retrieval still works
+2. AI extraction still works
+3. `Not Found` fields still behave correctly
+4. source evidence remains visible
+5. human editing and confirmation still work
+6. loading and error states remain understandable
+7. the layout works at desktop, tablet, and mobile widths
+8. keyboard focus remains visible
+9. there are no unexpected browser console errors
+
+Prioritize presentation polish and usability. Do not overengineer the application or add functionality beyond the existing MVP.
