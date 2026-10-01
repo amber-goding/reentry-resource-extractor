@@ -773,3 +773,65 @@ After redesigning the interface, verify:
 9. there are no unexpected browser console errors
 
 Prioritize presentation polish and usability. Do not overengineer the application or add functionality beyond the existing MVP.
+
+### Prompt 16 — Refine Color System
+
+**Context:** The redesigned interface needs a bolder, more distinctive visual tone without changing layout or behavior.
+
+**Task:** Update the color system to use deep dark blue with warm cream/off-white tones while preserving readability and state clarity.
+
+**Format:** CSS-only visual tone refinement covering backgrounds, panels, text, buttons, statuses, result fields, badges, and focus states.
+
+**Constraints:** Do not change application logic, layout structure, backend behavior, review workflow, responsiveness, accessibility, or redesign the app from scratch.
+
+**Full Prompt:**\
+# Context from my IDE setup:
+
+## Active file: prompt-history.md
+
+## Open tabs:
+- prompt-history.md: prompt-history.md
+- project-plan.md: project-plan.md
+- package.json: package.json
+- server.js: server.js
+- README.md: README.md
+
+## My request:
+Refine the visual design of the Reentry Resource Extractor by updating the color system only, while preserving the current layout, functionality, responsiveness, accessibility, and overall polished look.
+
+I want the interface to feel **bolder, more striking, and more distinctive**, but still professional and easy to read. Move away from the current lighter color palette and introduce a **deep dark blue** as a major background or surface color. Pair it with **warm cream or off-white text/surfaces** so the design feels elegant, calm, and trustworthy rather than harsh or overly loud.
+
+Design direction:
+
+- use a dark blue or navy-based background treatment
+- use cream, soft ivory, or warm off-white tones for readable contrast
+- keep the look modern, polished, and slightly bold
+- avoid neon colors, overly bright saturation, or anything that feels flashy
+- preserve a sense of hope, transition, and professionalism appropriate for a reentry-focused product
+
+Update the color styling for:
+
+- page background
+- main panels/cards
+- headings and body text
+- buttons and hover states
+- status messages
+- retrieval preview area
+- result fields
+- `Not Found` states
+- `Unreviewed`, `Confirmed`, and `Edited` review badges
+- focus states
+
+Keep readability as a top priority. Maintain strong contrast, visible focus states, and accessibility. `Not Found`, success, warning, and error states should remain clearly distinguishable, but not visually harsh.
+
+Do not change the application logic, layout structure, backend behavior, or review workflow unless a tiny front-end adjustment is required for visual consistency.
+
+Do not redesign the whole app from scratch. This is a **color and visual tone refinement**, not a functional rewrite.
+
+After updating the styling, verify that:
+
+1. the interface still looks polished on desktop, tablet, and mobile
+2. text remains easy to read
+3. buttons and statuses are still clear
+4. keyboard focus remains visible
+5. no functionality is broken
