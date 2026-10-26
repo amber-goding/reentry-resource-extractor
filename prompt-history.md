@@ -602,7 +602,7 @@ After implementation, verify:
 
 Do not significantly redesign the UI yet.
 
-### Prompt 13 ó Check API Key Configuration
+### Prompt 13 ‚Äî Check API Key Configuration
 
 **Context:** The AI extraction feature depends on a server-side OpenAI API key being available.
 
@@ -627,7 +627,7 @@ Do not significantly redesign the UI yet.
 ## My request:
 is it set now?
 
-### Prompt 14 ó Add Human Review
+### Prompt 14 ‚Äî Add Human Review
 
 **Context:** AI extraction results need a human-in-the-loop review step before they are considered complete.
 
@@ -690,7 +690,7 @@ After implementation, verify that:
 
 Do not significantly redesign the application yet. This step is focused on completing the responsible human-in-the-loop workflow.
 
-### Prompt 15 ó Redesign Product Interface
+### Prompt 15 ‚Äî Redesign Product Interface
 
 **Context:** The MVP functionality exists and now needs a polished, presentation-ready visual design.
 
@@ -717,7 +717,7 @@ Redesign the existing Reentry Resource Extractor interface into a polished, dist
 
 The application already has working website retrieval, AI extraction, source evidence, `Not Found` handling, and human review. Preserve all of that behavior exactly as it currently works.
 
-I want the visual design to feel professional, innovative, hopeful, and intentionally connected to the idea of reentry, transition, progress, and a new beginning. Avoid the generic ìwhite dashboard with blue cardsî appearance common in bootcamp projects.
+I want the visual design to feel professional, innovative, hopeful, and intentionally connected to the idea of reentry, transition, progress, and a new beginning. Avoid the generic ‚Äúwhite dashboard with blue cards‚Äù appearance common in bootcamp projects.
 
 Create a cohesive visual identity using modern typography, strong hierarchy, layered surfaces, thoughtful spacing, subtle depth, and restrained visual effects. You may use gradients, geometric shapes, soft background treatments, accent lines, status badges, or subtle animations where they genuinely improve the experience, but do not make the interface distracting or gimmicky.
 
@@ -774,7 +774,7 @@ After redesigning the interface, verify:
 
 Prioritize presentation polish and usability. Do not overengineer the application or add functionality beyond the existing MVP.
 
-### Prompt 16 ó Refine Color System
+### Prompt 16 ‚Äî Refine Color System
 
 **Context:** The redesigned interface needs a bolder, more distinctive visual tone without changing layout or behavior.
 
@@ -835,3 +835,59 @@ After updating the styling, verify that:
 3. buttons and statuses are still clear
 4. keyboard focus remains visible
 5. no functionality is broken
+
+### Prompt 17 ‚Äî Prepare Railway Deployment
+
+**Context:** The application needs a production configuration for deployment on Railway while retaining its local Vite workflow.
+
+**Task:** Configure the Node server to serve the built Vite frontend and existing API routes together, and add an `npm start` command.
+
+**Format:** Production Node/Vite setup using `dist`, Railway's `PORT`, external binding, and direct-navigation support.
+
+**Constraints:** Preserve retrieval, AI extraction, security, review behavior, and local development; keep the API key server-only and do not add Docker unless necessary.
+
+**Full Prompt:**\
+Prepare the Reentry Resource Extractor for production deployment on Railway.
+
+Keep the existing local development workflow working, but add a production setup where `vite build` creates the frontend in `dist`, and the Node server serves those static files in production while continuing to handle `/api/retrieve` and `/api/analyze`.
+
+Add an `npm start` script that runs the production server.
+
+Make the server listen on Railway‚Äôs `PORT` environment variable and bind in a way that allows external traffic.
+
+Preserve all current scraping, AI extraction, security, and human-review behavior.
+
+Do not expose `OPENAI_API_KEY` to the frontend.
+
+After the change, verify:
+
+- `npm run dev` still works locally
+- `npm run dev:backend` still works locally
+- `npm run build` succeeds
+- `npm start` serves the built frontend and API routes together
+- direct navigation to the app works
+- the API key remains server-only
+
+Do not add Docker unless it is actually necessary.
+
+### Prompt 18 ‚Äî Verify Exact Source Evidence
+
+**Context:** AI-found extraction fields need stronger evidence guarantees before the production-ready version is committed.
+
+**Task:** Require exact website excerpts as source evidence and downgrade individually unverifiable found fields to the existing not-found shape.
+
+**Format:** Backend-only extraction prompt and validation refinement with whitespace-normalized evidence matching.
+
+**Constraints:** Preserve architecture, deployment, retrieval, UI, review workflow, security, structured schema, error handling, and all other existing behavior.
+
+**Full Prompt:**\
+Before we commit the production-ready version, strengthen the existing AI source-evidence requirement without changing the application's architecture, deployment configuration, retrieval behavior, UI, or human-review workflow.
+For every field with `found: true`, require `sourceEvidence` to be a short exact excerpt copied from the retrieved website text rather than a summary or paraphrase.
+After receiving the structured AI result, verify on the backend that each `sourceEvidence` value is actually supported by the retrieved text. Use a reasonable normalization approach for whitespace so harmless formatting differences do not cause false failures.
+If a field is marked `found: true` but its value is empty, its source evidence is empty, or the evidence cannot be verified against the retrieved website text, safely convert that field to the normal not-found shape:
+`found: false`\
+`value: ""`\
+`sourceEvidence: ""`
+Do not fail the entire extraction because one field has invalid evidence.
+Preserve all existing Railway production setup, API-key protection, retrieval security, structured output schema, error handling, frontend behavior, and human-review functionality.
+After the change, verify the server syntax and existing build/tests, and specifically confirm that unsupported or unverifiable evidence cannot be presented as a found result.
